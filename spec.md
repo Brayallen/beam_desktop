@@ -115,6 +115,45 @@ be positive or meaningful at the documented sign convention.
 - Utilization percentages for bending and deflection
 - Expandable assumption and calculation-summary sections
 
+## Save and Open
+
+- The application must provide a File menu with **Save** and **Open** options.
+- Save must write the complete design to a JSON file.
+- Open must read a saved JSON file and restore the design in the interface.
+- Opening a design must restore all calculation inputs and rerun the analysis.
+- The saved JSON must include:
+  - Support type
+  - Beam span
+  - Section material
+  - Section size/designation
+  - Lumber orientation when lumber is selected
+  - Deflection limit
+  - All point loads
+  - All uniformly distributed loads
+
+Saved design fields should use a simple, readable JSON structure:
+
+```json
+{
+  "support": "simple",
+  "span_ft": 20,
+  "material": "steel",
+  "section": "W12x26",
+  "lumber_orientation": null,
+  "deflection_limit_in": 0.6666666666666666,
+  "point_loads": [
+    {"magnitude_kip": 10, "position_ft": 10}
+  ],
+  "uniform_loads": [
+    {"magnitude_kip_per_ft": 1, "start_ft": 0, "end_ft": 20}
+  ]
+}
+```
+
+Steel designs must set `lumber_orientation` to `null`. Lumber designs must set
+it to `edgewise` or `flatwise`. Saved load arrays must contain every point load
+and uniformly distributed load currently entered in the design.
+
 ## Look and feel
 
 - Clean, professional, engineering-tool interface

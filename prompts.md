@@ -22,3 +22,8 @@
 - Asked: Run every spec validation case against the beam calculations and report expected versus actual values without changing validated formulas.
 - Changed: Expanded executable validation coverage for the baseline, point and uniform cantilevers, multiple and mixed loads, lumber orientations, and invalid inputs; added a validation report with supporting calculations.
 - Worked: Yes. All 10 expanded validation tests passed after allowing 0.011 inch for lumber-flatwise numerical integration rounding; no formulas were changed.
+
+## Request 6
+- Asked: Update spec.md for the first desktop feature: Save and Open, including a File menu, saved design fields, and a simple JSON format. Remove Saving designs from out of scope and do not build the feature.
+- Changed: Added a Save and Open feature specification with a File menu requirement and JSON design schema; Saving designs is no longer listed as out of scope.
+- Worked: Yes.
