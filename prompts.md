@@ -57,3 +57,8 @@
 - Asked: Refine the calculation sheet to fit two US Letter pages if possible without losing required content or readability; regenerate and inspect every page, rerun validations, update this log, and commit.
 - Changed: Moved the deflection diagram and assumptions onto page 1 with the design inputs and beam diagram; placed the results, checks, and enlarged shear/moment diagrams on page 2; regenerated the baseline PDF and updated layout tests and validation results.
 - Worked: Yes. The updated report is two US Letter pages, both pages were rendered and visually inspected, and all 27 tests passed.
+
+## Request 13
+- Asked: Read the completed app and add a short README with purpose, Python/packages, installation, launch command, persistence/export features, and educational-use note; add the supplied index.html to version control; record and commit without changing app functionality.
+- Changed: Added README.md with setup and feature documentation, clarified that this implementation needs ReportLab but not NumPy or Matplotlib, and staged the original index.html reference.
+- Worked: Yes. The README documents the verified project dependencies and `python3 main.py` launch command; the reference file is included in the commit.
