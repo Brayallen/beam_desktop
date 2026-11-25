@@ -1,3 +1,4 @@
+import csv
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
@@ -11,6 +12,7 @@ from beam_designer import (
     analyze,
 )
 from design_io import SavedDesign, open_design, save_design
+from csv_export import write_results_csv
 
 
 class BeamDesignerApp(ttk.Frame):
@@ -184,6 +186,14 @@ class BeamDesignerApp(ttk.Frame):
         ttk.Button(controls, text="Analyze beam", command=self.analyze).grid(
             row=row, column=0, columnspan=2, sticky="ew", pady=(4, 6)
         )
+        row += 1
+        self.export_button = ttk.Button(
+            controls,
+            text="Export Results to CSV",
+            command=self.export_results_dialog,
+            state="disabled",
+        )
+        self.export_button.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(0, 6))
         row += 1
         self.error_var = tk.StringVar(value="")
         ttk.Label(controls, textvariable=self.error_var, foreground="#bd2c2c", wraplength=300).grid(
@@ -400,9 +410,12 @@ class BeamDesignerApp(ttk.Frame):
             )
             self.error_var.set("")
         except ValueError as error:
+            self.result = None
+            self.export_button.configure(state="disabled")
             self.error_var.set(str(error))
             return
 
+        self.export_button.configure(state="normal")
         r = self.result
         value, sub = self.summary_labels["Overall status"]
         value.configure(
@@ -450,6 +463,29 @@ class BeamDesignerApp(ttk.Frame):
             )
         )
         self.draw_all()
+
+    def export_results_dialog(self):
+        if self.result is None:
+            messagebox.showerror(
+                "No analyzed results",
+                "Correct the beam inputs and analyze the beam before exporting results.",
+                parent=self.master,
+            )
+            return
+
+        path = filedialog.asksaveasfilename(
+            title="Export beam results",
+            defaultextension=".csv",
+            filetypes=(("CSV files", "*.csv"), ("All files", "*.*")),
+        )
+        if not path:
+            return
+        try:
+            write_results_csv(path, self.result)
+        except (OSError, ValueError, csv.Error) as error:
+            messagebox.showerror("Could not export results", str(error), parent=self.master)
+            return
+        messagebox.showinfo("Results exported", f"Exported beam results to:\n{path}", parent=self.master)
 
     def current_design(self) -> SavedDesign:
         span = float(self.span_entry.get())

@@ -163,9 +163,9 @@ and uniformly distributed load currently entered in the design.
   UTF-8 with a byte-order mark, CRLF line endings, and a decimal point in
   numeric values.
 - Include one header row with these exact column headings, in this order:
-  - `Position along beam x (ft)`
-  - `Shear force V (kip)`
-  - `Bending moment M (kip-ft)`
+  - `Position, x (ft)`
+  - `Shear force, V (kip)`
+  - `Bending moment, M (kip-ft)`
   - `Deflection (in)`
 - Include one data row for each sampled position used by the analysis diagrams.
   Preserve the calculation sign convention and write numeric values with six

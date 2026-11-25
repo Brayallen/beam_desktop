@@ -181,3 +181,16 @@ rerun and passed.
 | Invalid/corrupted JSON | Passed; helpful error shown, original UI inputs left unchanged |
 | Incompatible section and out-of-span loads | Passed; rejected before UI restoration |
 | Full Python test suite | 17 tests passed |
+
+## CSV export implementation verification
+
+| Check | Result |
+|---|---|
+| CSV header order and text | Passed: `Position, x (ft)`, `Shear force, V (kip)`, `Bending moment, M (kip-ft)`, `Deflection (in)` |
+| Excel-compatible formatting | Passed: UTF-8 BOM, comma-delimited values, CRLF records, decimal points, and six decimal places |
+| Sample count and endpoints | Passed: 481 data rows plus header; positions range from 0.000000 ft to 20.000000 ft |
+| Baseline numerical values | Passed: start V=10.000000 kip; midpoint M=50.000000 kip-ft and deflection=0.608515 in; end V=-10.000000 kip |
+| Invalid/unanalyzed inputs | Passed: export is disabled, an explanatory error is shown when invoked, and stale results are cleared |
+| Canceled Save dialog | Passed: no CSV is written and no success dialog is shown |
+| Microsoft Excel open | Passed: Excel reported `beam_designer_csv_validation.csv` as the active workbook |
+| Full Python test suite | 21 tests passed |

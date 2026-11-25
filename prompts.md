@@ -37,3 +37,8 @@
 - Asked: Add a CSV export requirement to spec.md with an Excel-compatible file, specified result columns, precision, and invalid/unanalyzed behavior, without implementing it or beginning the PDF feature.
 - Changed: Added the Export Results to CSV requirements, exact unit-bearing headers, Excel-friendly encoding and line endings, six-decimal precision, sampled result rows, and stale/invalid input handling.
 - Worked: Yes.
+
+## Request 9
+- Asked: Implement the CSV export feature, verify headers, row count and values, invalid inputs, canceled dialogs, Excel compatibility, rerun spec validation, and commit without starting the PDF feature.
+- Changed: Added an Export Results to CSV button and Excel-compatible CSV writer using all analysis samples, disabled export for invalid results, added CSV and dialog tests, and documented results in validation_report.md.
+- Worked: Yes. All 21 tests passed; the generated file had 481 data rows and correct endpoint values, invalid/canceled flows passed, and Microsoft Excel opened it as the active workbook.
