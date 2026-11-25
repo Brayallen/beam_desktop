@@ -175,6 +175,36 @@ and uniformly distributed load currently entered in the design.
   file with stale results; disable the button and show a helpful explanation if
   export is requested.
 
+## PDF Calculation Sheet
+
+- Provide an **Export PDF Calculation Sheet** button in the desktop interface
+  that opens a Save dialog and writes a PDF report for the current successful
+  beam analysis.
+- The report must include:
+  - A clear **Beam Designer** title and the report generation date
+  - All beam inputs, with units: support type, span, material, section, lumber
+    orientation when applicable, deflection limit, and every point and uniform
+    load with its magnitude and position or start/end locations
+  - A beam diagram showing supports, span dimensions, applied loads, and support
+    reactions
+  - Shear-force, bending-moment, and deflection diagrams with labeled axes and
+    units
+  - Maximum shear, maximum bending moment, and maximum deflection, each with
+    its location along the beam
+  - Bending stress and allowable bending stress, with a clear PASS/FAIL result
+  - Maximum deflection and allowable deflection, with a clear PASS/FAIL result
+  - An overall beam design status
+  - The engineering assumptions and limitations used by the analysis
+- Use a professional, consistent layout and readable typography suitable for
+  engineering design review and printing on standard US Letter-size paper
+  (8.5 × 11 inches). If the content requires multiple pages, use clear page
+  breaks and preserve readable sizing rather than shrinking content to fit.
+- If inputs are invalid or the current inputs have not been successfully
+  analyzed, prevent export, do not use stale results, and show a helpful
+  explanation.
+- If the user cancels the Save dialog, do not create or overwrite a file and do
+  not show an error.
+
 ## Look and feel
 
 - Clean, professional, engineering-tool interface

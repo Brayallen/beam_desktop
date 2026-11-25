@@ -42,3 +42,8 @@
 - Asked: Implement the CSV export feature, verify headers, row count and values, invalid inputs, canceled dialogs, Excel compatibility, rerun spec validation, and commit without starting the PDF feature.
 - Changed: Added an Export Results to CSV button and Excel-compatible CSV writer using all analysis samples, disabled export for invalid results, added CSV and dialog tests, and documented results in validation_report.md.
 - Worked: Yes. All 21 tests passed; the generated file had 481 data rows and correct endpoint values, invalid/canceled flows passed, and Microsoft Excel opened it as the active workbook.
+
+## Request 10
+- Asked: Add the PDF Calculation Sheet requirements to spec.md, including report content, US Letter printing, and invalid-input/canceled-dialog behavior, without implementing it or changing calculations, Save/Open, or CSV Export.
+- Changed: Specified a PDF export button and Save dialog, required design inputs, diagrams, values, checks, status, assumptions, and readable multi-page US Letter layout.
+- Worked: Yes.
