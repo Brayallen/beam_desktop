@@ -195,6 +195,7 @@ def analyze(
     section: SteelSection | LumberSection,
     orientation: str = "edgewise",
     samples: int = 481,
+    deflection_limit_in: float | None = None,
 ) -> dict:
     error = validate_inputs(span, loads)
     if error:
@@ -223,7 +224,12 @@ def analyze(
     else:
         allowable_ksi = section.Fb
     bending_ratio = bending_stress_ksi / allowable_ksi
-    deflection_limit = span * 12.0 / 360.0
+    if deflection_limit_in is None:
+        deflection_limit = span * 12.0 / 360.0
+    elif not isfinite(deflection_limit_in) or deflection_limit_in <= 0:
+        raise ValueError("Deflection limit must be greater than zero.")
+    else:
+        deflection_limit = deflection_limit_in
     deflection_ratio = abs(max_deflection) / deflection_limit
 
     bending_pass = bending_ratio <= 1.0

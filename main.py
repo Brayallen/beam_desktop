@@ -1,9 +1,8 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import filedialog, messagebox, ttk
 
 from beam_designer import (
     BeamLoads,
-    LumberSection,
     PointLoad,
     STEEL_SECTIONS,
     LUMBER_SECTIONS,
@@ -11,6 +10,7 @@ from beam_designer import (
     UniformLoad,
     analyze,
 )
+from design_io import SavedDesign, open_design, save_design
 
 
 class BeamDesignerApp(ttk.Frame):
@@ -26,11 +26,24 @@ class BeamDesignerApp(ttk.Frame):
         self.point_rows: list[tuple[ttk.Entry, ttk.Entry, ttk.Button]] = []
         self.uniform_rows: list[tuple[ttk.Entry, ttk.Entry, ttk.Entry, ttk.Button]] = []
         self.result = None
+        self.loading_design = False
+        self.limit_tracks_span = True
+        self.create_file_menu()
         self.build_ui()
         self.add_point_load(5.0, 10.0)
         self.add_uniform_load(1.0, 0.0, 20.0)
         self.update_section_options()
         self.analyze()
+
+    def create_file_menu(self):
+        menu_bar = tk.Menu(self.master)
+        file_menu = tk.Menu(menu_bar, tearoff=False)
+        file_menu.add_command(label="Open...", command=self.open_design_dialog, accelerator="Ctrl+O")
+        file_menu.add_command(label="Save...", command=self.save_design_dialog, accelerator="Ctrl+S")
+        menu_bar.add_cascade(label="File", menu=file_menu)
+        self.master.configure(menu=menu_bar)
+        self.master.bind("<Control-o>", lambda event: self.open_design_dialog())
+        self.master.bind("<Control-s>", lambda event: self.save_design_dialog())
 
     def build_ui(self):
         self.pack(fill="both", expand=True)
@@ -98,7 +111,13 @@ class BeamDesignerApp(ttk.Frame):
         self.span_entry = ttk.Entry(controls, width=12)
         self.span_entry.insert(0, "20")
         self.span_entry.grid(row=row, column=1, sticky="e", pady=(0, 12))
-        self.span_entry.bind("<KeyRelease>", lambda event: self.analyze())
+        self.span_entry.bind("<KeyRelease>", lambda event: self.on_span_changed())
+        row += 1
+        ttk.Label(controls, text="Deflection limit (in)").grid(row=row, column=0, sticky="w")
+        self.deflection_limit_entry = ttk.Entry(controls, width=12)
+        self.deflection_limit_entry.insert(0, str(20.0 * 12.0 / 360.0))
+        self.deflection_limit_entry.grid(row=row, column=1, sticky="e", pady=(0, 12))
+        self.deflection_limit_entry.bind("<KeyRelease>", lambda event: self.on_limit_changed())
         row += 1
 
         ttk.Separator(controls).grid(row=row, column=0, columnspan=2, sticky="ew", pady=(0, 8))
@@ -301,6 +320,9 @@ class BeamDesignerApp(ttk.Frame):
         self.analyze()
 
     def update_section_options(self):
+        self.set_section_options(run_analysis=True)
+
+    def set_section_options(self, run_analysis: bool):
         self.material = self.material_var.get()
         if self.material == "steel":
             values = [section.designation for section in STEEL_SECTIONS]
@@ -316,6 +338,22 @@ class BeamDesignerApp(ttk.Frame):
             self.orientation_combo.configure(state="readonly")
             self.source_label.configure(text="Section source: " + SECTION_SOURCES["lumber"])
         self.section_combo.configure(values=values)
+        if run_analysis:
+            self.analyze()
+
+    def on_span_changed(self):
+        if self.limit_tracks_span:
+            try:
+                span = float(self.span_entry.get())
+                if span > 0:
+                    self.deflection_limit_entry.delete(0, tk.END)
+                    self.deflection_limit_entry.insert(0, str(span * 12.0 / 360.0))
+            except ValueError:
+                pass
+        self.analyze()
+
+    def on_limit_changed(self):
+        self.limit_tracks_span = False
         self.analyze()
 
     def read_loads(self) -> BeamLoads:
@@ -343,13 +381,23 @@ class BeamDesignerApp(ttk.Frame):
         return LUMBER_SECTIONS[0]
 
     def analyze(self):
+        if self.loading_design:
+            return
         try:
             span = float(self.span_entry.get())
             loads = self.read_loads()
             section = self.get_selected_section()
             support = self.support_var.get()
             orientation = self.orientation_var.get()
-            self.result = analyze(support, span, loads, section, orientation)
+            deflection_limit = float(self.deflection_limit_entry.get())
+            self.result = analyze(
+                support,
+                span,
+                loads,
+                section,
+                orientation,
+                deflection_limit_in=deflection_limit,
+            )
             self.error_var.set("")
         except ValueError as error:
             self.error_var.set(str(error))
@@ -402,6 +450,110 @@ class BeamDesignerApp(ttk.Frame):
             )
         )
         self.draw_all()
+
+    def current_design(self) -> SavedDesign:
+        span = float(self.span_entry.get())
+        loads = self.read_loads()
+        material = self.material_var.get()
+        section = self.get_selected_section()
+        return SavedDesign.from_json_value(
+            {
+                "support": self.support_var.get(),
+                "span_ft": span,
+                "material": material,
+                "section": section.designation,
+                "lumber_orientation": self.orientation_var.get() if material == "lumber" else None,
+                "deflection_limit_in": float(self.deflection_limit_entry.get()),
+                "point_loads": [
+                    {"magnitude_kip": load.value, "position_ft": load.position}
+                    for load in loads.point
+                ],
+                "uniform_loads": [
+                    {
+                        "magnitude_kip_per_ft": load.value,
+                        "start_ft": load.start,
+                        "end_ft": load.end,
+                    }
+                    for load in loads.uniform
+                ],
+            }
+        )
+
+    def save_design_dialog(self):
+        path = filedialog.asksaveasfilename(
+            title="Save beam design",
+            defaultextension=".json",
+            filetypes=(("Beam design JSON", "*.json"), ("All files", "*.*")),
+        )
+        if not path:
+            return
+        try:
+            design = self.current_design()
+            save_design(path, design)
+        except (OSError, ValueError) as error:
+            messagebox.showerror("Could not save design", str(error), parent=self.master)
+            return
+        messagebox.showinfo("Design saved", f"Saved beam design to:\n{path}", parent=self.master)
+
+    def open_design_dialog(self):
+        path = filedialog.askopenfilename(
+            title="Open beam design",
+            filetypes=(("Beam design JSON", "*.json"), ("All files", "*.*")),
+        )
+        if not path:
+            return
+        try:
+            design = open_design(path)
+        except (OSError, ValueError) as error:
+            messagebox.showerror(
+                "Could not open design",
+                f"The selected file is invalid or incompatible:\n{error}",
+                parent=self.master,
+            )
+            return
+        self.restore_design(design)
+
+    def restore_design(self, design: SavedDesign):
+        self.loading_design = True
+        try:
+            self.support_var.set(design.support)
+            self.material_var.set(design.material)
+            self.span_entry.delete(0, tk.END)
+            self.span_entry.insert(0, str(design.span_ft))
+            self.deflection_limit_entry.delete(0, tk.END)
+            self.deflection_limit_entry.insert(0, str(design.deflection_limit_in))
+            self.limit_tracks_span = abs(
+                design.deflection_limit_in - design.span_ft * 12.0 / 360.0
+            ) < 1e-12
+
+            self.set_section_options(run_analysis=False)
+            if design.material == "lumber":
+                section_value = next(
+                    value
+                    for value in self.section_combo["values"]
+                    if value.split(" - ", 1)[0] == design.section
+                )
+                self.orientation_var.set(design.lumber_orientation)
+            else:
+                section_value = design.section
+            self.section_var.set(section_value)
+
+            for row in self.point_rows:
+                for widget in row:
+                    widget.destroy()
+            self.point_rows.clear()
+            for load in design.point_loads:
+                self.add_point_load(load.value, load.position)
+
+            for row in self.uniform_rows:
+                for widget in row:
+                    widget.destroy()
+            self.uniform_rows.clear()
+            for load in design.uniform_loads:
+                self.add_uniform_load(load.value, load.start, load.end)
+        finally:
+            self.loading_design = False
+        self.analyze()
 
     def clear_canvas(self, canvas: tk.Canvas):
         canvas.delete("all")

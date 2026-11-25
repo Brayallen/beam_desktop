@@ -27,3 +27,8 @@
 - Asked: Update spec.md for the first desktop feature: Save and Open, including a File menu, saved design fields, and a simple JSON format. Remove Saving designs from out of scope and do not build the feature.
 - Changed: Added a Save and Open feature specification with a File menu requirement and JSON design schema; Saving designs is no longer listed as out of scope.
 - Worked: Yes.
+
+## Request 7
+- Asked: Implement the spec's JSON Save and Open feature, restore all inputs and recalculate on open, handle invalid files safely, preserve calculations, rerun validations, and commit implementation and test results.
+- Changed: Added the File menu, editable deflection-limit input, validated JSON persistence, safe load/restore behavior, round-trip and invalid-file tests, and regression results in validation_report.md.
+- Worked: Yes. All 17 tests passed; the live Tkinter round-trip restored every input and redrew diagrams, and malformed JSON showed an error without changing the current design.

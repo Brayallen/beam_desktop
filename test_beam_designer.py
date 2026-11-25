@@ -25,6 +25,21 @@ class BeamDesignerTests(unittest.TestCase):
         self.assertAlmostEqual(abs(result["max_deflection"]), 0.609, delta=0.003)
         self.assertAlmostEqual(result["deflection_limit"], 0.667, delta=0.001)
 
+    def test_explicit_deflection_limit_preserves_default_calculation_values(self):
+        loads = BeamLoads(uniform=(UniformLoad(1.0, 0.0, 20.0),), point=())
+        default = analyze("simple", 20.0, loads, STEEL_SECTIONS[0])
+        custom = analyze(
+            "simple",
+            20.0,
+            loads,
+            STEEL_SECTIONS[0],
+            deflection_limit_in=0.5,
+        )
+        self.assertAlmostEqual(custom["max_moment"], default["max_moment"])
+        self.assertAlmostEqual(custom["max_deflection"], default["max_deflection"])
+        self.assertEqual(custom["deflection_limit"], 0.5)
+        self.assertAlmostEqual(custom["deflection_ratio"], abs(default["max_deflection"]) / 0.5)
+
     def test_center_point_load(self):
         loads = BeamLoads(point=(PointLoad(10.0, 10.0),), uniform=())
         result = analyze("simple", 20.0, loads, STEEL_SECTIONS[0])

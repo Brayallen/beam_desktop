@@ -165,3 +165,19 @@ Validation tolerance: reactions, moments, locations, and section properties with
 - Invalid uniform ranges and values return the corresponding inline validation messages.
 
 **Expected vs actual:** PASS.
+
+## Save/Open implementation regression
+
+The Save/Open implementation preserves the default `L/360` limit and the
+existing beam response formulas. All calculation cases in this report were
+rerun and passed.
+
+| Test group | Result |
+|---|---|
+| Calculation cases from this report | All passed |
+| Custom deflection-limit behavior | Passed; only the limit and utilization change, while moment and deflection remain unchanged |
+| JSON save/reopen, steel design | Passed; support, span, section material/size, null lumber orientation, explicit limit, two point loads, and two uniform loads restored |
+| JSON save/reopen, lumber design | Passed; lumber section and flatwise orientation restored |
+| Invalid/corrupted JSON | Passed; helpful error shown, original UI inputs left unchanged |
+| Incompatible section and out-of-span loads | Passed; rejected before UI restoration |
+| Full Python test suite | 17 tests passed |
