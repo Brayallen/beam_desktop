@@ -32,3 +32,8 @@
 - Asked: Implement the spec's JSON Save and Open feature, restore all inputs and recalculate on open, handle invalid files safely, preserve calculations, rerun validations, and commit implementation and test results.
 - Changed: Added the File menu, editable deflection-limit input, validated JSON persistence, safe load/restore behavior, round-trip and invalid-file tests, and regression results in validation_report.md.
 - Worked: Yes. All 17 tests passed; the live Tkinter round-trip restored every input and redrew diagrams, and malformed JSON showed an error without changing the current design.
+
+## Request 8
+- Asked: Add a CSV export requirement to spec.md with an Excel-compatible file, specified result columns, precision, and invalid/unanalyzed behavior, without implementing it or beginning the PDF feature.
+- Changed: Added the Export Results to CSV requirements, exact unit-bearing headers, Excel-friendly encoding and line endings, six-decimal precision, sampled result rows, and stale/invalid input handling.
+- Worked: Yes.

@@ -154,6 +154,27 @@ Steel designs must set `lumber_orientation` to `null`. Lumber designs must set
 it to `edgewise` or `flatwise`. Saved load arrays must contain every point load
 and uniformly distributed load currently entered in the design.
 
+## Export Results to CSV
+
+- Provide an **Export Results to CSV** button in the desktop interface.
+- Export the most recently analyzed beam results to a CSV file selected by the
+  user.
+- The CSV must open correctly in Microsoft Excel: use comma-separated columns,
+  UTF-8 with a byte-order mark, CRLF line endings, and a decimal point in
+  numeric values.
+- Include one header row with these exact column headings, in this order:
+  - `Position along beam x (ft)`
+  - `Shear force V (kip)`
+  - `Bending moment M (kip-ft)`
+  - `Deflection (in)`
+- Include one data row for each sampled position used by the analysis diagrams.
+  Preserve the calculation sign convention and write numeric values with six
+  digits after the decimal point, without thousands separators.
+- Enable export only when the current beam inputs have a successful analysis.
+  If inputs are invalid or have not been analyzed, do not create or overwrite a
+  file with stale results; disable the button and show a helpful explanation if
+  export is requested.
+
 ## Look and feel
 
 - Clean, professional, engineering-tool interface
