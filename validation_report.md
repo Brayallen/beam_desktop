@@ -200,10 +200,11 @@ rerun and passed.
 | Check | Result |
 |---|---|
 | Baseline report generated | Passed: `beam_designer_baseline_calculation_sheet.pdf` |
-| Page count and paper size | Passed: 3 pages, each with a 612 × 792 point US Letter page box |
+| Page count and paper size | Passed: 2 pages, each with a 612 × 792 point US Letter page box |
+| Page content placement | Passed: page 1 contains inputs, loads, beam/reactions, deflection diagram, and assumptions; page 2 contains analysis results, PASS/FAIL checks, shear diagram, and bending-moment diagram |
 | Required report content | Passed: title/date, inputs and loads, reactions, maxima and locations, bending/deflection demands and allowables, PASS results, overall status, and assumptions/limitations |
 | Baseline values | Passed: reactions 10.000 kip each; maximum shear 10.000 kip at 0 ft; maximum moment 50.000 kip-ft at 10 ft; maximum deflection 0.6085 in at 10 ft; bending and deflection checks PASS |
-| Diagrams and page bounds | Passed: all three rendered pages visually inspected; beam, shear, moment, and deflection diagrams have labels/units; no extracted text falls outside page bounds or overlaps/clips in visual review |
+| Diagrams and page bounds | Passed: both rendered pages visually inspected; all diagrams retain labeled axes/units, axis and tick text sizes remain unchanged, and the shear/moment charts are enlarged; no content overlaps or clips |
 | Current/missing or mismatched results | Passed: PDF generation rejects missing or mismatched analysis results before writing a file |
 | Invalid inputs and canceled Save dialog | Passed: current invalid inputs disable PDF export and show a helpful message; cancel creates no file and shows no error |
 | Full Python test suite | 27 tests passed, including all beam calculation, Save/Open, CSV, and PDF tests |

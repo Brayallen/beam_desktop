@@ -51,12 +51,17 @@ class PdfReportTests(unittest.TestCase):
             self.assertGreater(path.stat().st_size, 10_000)
             reader = PdfReader(str(path))
 
-        self.assertEqual(len(reader.pages), 3)
+        self.assertEqual(len(reader.pages), 2)
         for page in reader.pages:
             self.assertAlmostEqual(float(page.mediabox.width), 612.0)
             self.assertAlmostEqual(float(page.mediabox.height), 792.0)
 
-        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        page_text = [page.extract_text() or "" for page in reader.pages]
+        text = "\n".join(page_text)
+        self.assertIn("Deflection Diagram", page_text[0])
+        self.assertIn("Engineering Assumptions and Limitations", page_text[0])
+        self.assertIn("Shear Force Diagram", page_text[1])
+        self.assertIn("Bending Moment Diagram", page_text[1])
         for required in (
             "Beam Designer Calculation Sheet",
             "Report date",

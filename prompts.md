@@ -52,3 +52,8 @@
 - Asked: Implement the PDF Calculation Sheet, verify the baseline PDF page-by-page and US Letter layout, test invalid/canceled exports, rerun validations, and commit implementation and test results.
 - Changed: Added a PDF export button and ReportLab report generator with input/load tables, beam and result diagrams, checks, assumptions, and page headers/footers; generated a baseline PDF and documented verification.
 - Worked: Yes. All 27 tests passed; the 3-page Letter PDF was visually inspected, Excel/CSV and Save/Open tests remain passing, and invalid/canceled PDF exports were handled safely. One initial new test had a capitalization-only expectation mismatch that was corrected and rerun. A physical printer test was not performed.
+
+## Request 12
+- Asked: Refine the calculation sheet to fit two US Letter pages if possible without losing required content or readability; regenerate and inspect every page, rerun validations, update this log, and commit.
+- Changed: Moved the deflection diagram and assumptions onto page 1 with the design inputs and beam diagram; placed the results, checks, and enlarged shear/moment diagrams on page 2; regenerated the baseline PDF and updated layout tests and validation results.
+- Worked: Yes. The updated report is two US Letter pages, both pages were rendered and visually inspected, and all 27 tests passed.

@@ -181,7 +181,7 @@ class ResultChart(Flowable):
 
         canvas.saveState()
         canvas.setFillColor(NAVY)
-        canvas.setFont("Helvetica-Bold", 9)
+        canvas.setFont("Helvetica-Bold", 10)
         canvas.drawString(2, height - 11, self.title)
         canvas.setStrokeColor(GRID)
         canvas.setLineWidth(0.45)
@@ -492,6 +492,38 @@ def create_calculation_sheet(path: str | Path, design: SavedDesign, result: dict
 
     story.append(Paragraph("Beam, Loads, and Reactions", styles["SectionHeading"]))
     story.append(BeamDiagram(result, content_width))
+    deflection_chart = ResultChart(
+        "Deflection Diagram — Deflection (in)",
+        result["deflection"],
+        "Deflection (in)",
+        colors.HexColor("#D97706"),
+        height=132,
+    )
+    deflection_chart.x_values = result["deflection_x"]
+    story.append(deflection_chart)
+
+    story.append(Paragraph("Engineering Assumptions and Limitations", styles["SectionHeading"]))
+    assumptions = [
+        "Prismatic, homogeneous, linearly elastic beam; small-deflection theory.",
+        "Vertical loads only; major-axis bending; deflection includes bending only, with shear deformation ignored.",
+        "Simply supported or cantilever boundary conditions only. No axial load, torsion, shear design, connection design, buckling, lateral-torsional buckling, or web yielding checks.",
+        "No load combinations, safety-factor or load-duration adjustments, live-load patterns, seismic/wind analysis, or beam self-weight are included.",
+        "Preliminary educational calculation only; verify design criteria, section properties, material values, and applicable codes with the responsible engineer.",
+    ]
+    story.append(
+        _paragraph(
+            "<br/>".join(f"- {item}" for item in assumptions),
+            styles["SmallBody"],
+        )
+    )
+    story.append(Spacer(1, 5))
+    story.append(
+        Paragraph(
+            "Sign convention: downward applied loads are positive; diagram values follow the Beam Designer analysis results. "
+            "Deflection and diagram signs are reported as calculated.",
+            styles["SmallMuted"],
+        )
+    )
     story.append(PageBreak())
 
     story.append(Paragraph("Analysis Results", styles["SectionHeading"]))
@@ -545,47 +577,19 @@ def create_calculation_sheet(path: str | Path, design: SavedDesign, result: dict
     )
     story.append(checks_table)
 
-    story.append(Paragraph("Shear Force Diagram", styles["SectionHeading"]))
-    shear_chart = ResultChart("Shear force, V (kip)", result["shear"], "V (kip)", BLUE, height=132)
+    shear_chart = ResultChart(
+        "Shear Force Diagram — V (kip)", result["shear"], "V (kip)", BLUE, height=190
+    )
     shear_chart.x_values = result["x"]
     story.append(shear_chart)
-    story.append(Paragraph("Bending Moment Diagram", styles["SectionHeading"]))
     moment_chart = ResultChart(
-        "Bending moment, M (kip-ft)", result["moment"], "M (kip-ft)", GREEN, height=132
+        "Bending Moment Diagram — M (kip-ft)",
+        result["moment"],
+        "M (kip-ft)",
+        GREEN,
+        height=190,
     )
     moment_chart.x_values = result["x"]
     story.append(moment_chart)
-    story.append(PageBreak())
-
-    story.append(Paragraph("Deflection Diagram", styles["SectionHeading"]))
-    deflection_chart = ResultChart(
-        "Deflection (in)", result["deflection"], "Deflection (in)", colors.HexColor("#D97706"),
-        height=165,
-    )
-    deflection_chart.x_values = result["deflection_x"]
-    story.append(deflection_chart)
-
-    story.append(Paragraph("Engineering Assumptions and Limitations", styles["SectionHeading"]))
-    assumptions = [
-        "Prismatic, homogeneous, linearly elastic beam; small-deflection theory.",
-        "Vertical loads only; major-axis bending; deflection includes bending only, with shear deformation ignored.",
-        "Simply supported or cantilever boundary conditions only. No axial load, torsion, shear design, connection design, buckling, lateral-torsional buckling, or web yielding checks.",
-        "No load combinations, safety-factor or load-duration adjustments, live-load patterns, seismic/wind analysis, or beam self-weight are included.",
-        "Preliminary educational calculation only; verify design criteria, section properties, material values, and applicable codes with the responsible engineer.",
-    ]
-    story.append(
-        _paragraph(
-            "<br/>".join(f"- {item}" for item in assumptions),
-            styles["SmallBody"],
-        )
-    )
-    story.append(Spacer(1, 5))
-    story.append(
-        Paragraph(
-            "Sign convention: downward applied loads are positive; diagram values follow the Beam Designer analysis results. "
-            "Deflection and diagram signs are reported as calculated.",
-            styles["SmallMuted"],
-        )
-    )
 
     document.build(story, onFirstPage=_on_page, onLaterPages=_on_page)
