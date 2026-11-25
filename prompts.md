@@ -7,3 +7,8 @@
 - Asked: Record the first request in prompts.md and commit the updated file.
 - Changed: Added entries for the first and second requests to prompts.md.
 - Worked: Yes.
+
+## Request 3
+- Asked: Update spec.md to describe a Python desktop app using Tkinter without building anything else.
+- Changed: Updated the spec to identify Tkinter and a cross-platform Python desktop implementation, and adjusted the layout requirement for desktop windows.
+- Worked: Yes.
