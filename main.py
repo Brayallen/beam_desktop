@@ -1,6 +1,7 @@
 import csv
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
+from reportlab.platypus.doctemplate import LayoutError
 
 from beam_designer import (
     BeamLoads,
@@ -13,6 +14,7 @@ from beam_designer import (
 )
 from design_io import SavedDesign, open_design, save_design
 from csv_export import write_results_csv
+from pdf_report import create_calculation_sheet
 
 
 class BeamDesignerApp(ttk.Frame):
@@ -194,6 +196,14 @@ class BeamDesignerApp(ttk.Frame):
             state="disabled",
         )
         self.export_button.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(0, 6))
+        row += 1
+        self.pdf_button = ttk.Button(
+            controls,
+            text="Export Calculation Sheet (PDF)",
+            command=self.export_pdf_dialog,
+            state="disabled",
+        )
+        self.pdf_button.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(0, 6))
         row += 1
         self.error_var = tk.StringVar(value="")
         ttk.Label(controls, textvariable=self.error_var, foreground="#bd2c2c", wraplength=300).grid(
@@ -412,10 +422,12 @@ class BeamDesignerApp(ttk.Frame):
         except ValueError as error:
             self.result = None
             self.export_button.configure(state="disabled")
+            self.pdf_button.configure(state="disabled")
             self.error_var.set(str(error))
             return
 
         self.export_button.configure(state="normal")
+        self.pdf_button.configure(state="normal")
         r = self.result
         value, sub = self.summary_labels["Overall status"]
         value.configure(
@@ -486,6 +498,38 @@ class BeamDesignerApp(ttk.Frame):
             messagebox.showerror("Could not export results", str(error), parent=self.master)
             return
         messagebox.showinfo("Results exported", f"Exported beam results to:\n{path}", parent=self.master)
+
+    def export_pdf_dialog(self):
+        if self.result is None:
+            messagebox.showerror(
+                "No analyzed results",
+                "Correct the beam inputs and analyze the beam before creating a calculation sheet.",
+                parent=self.master,
+            )
+            return
+
+        path = filedialog.asksaveasfilename(
+            title="Export calculation sheet",
+            defaultextension=".pdf",
+            filetypes=(("PDF files", "*.pdf"), ("All files", "*.*")),
+        )
+        if not path:
+            return
+        try:
+            design = self.current_design()
+            create_calculation_sheet(path, design, self.result)
+        except (OSError, ValueError, LayoutError) as error:
+            messagebox.showerror(
+                "Could not create calculation sheet",
+                str(error),
+                parent=self.master,
+            )
+            return
+        messagebox.showinfo(
+            "Calculation sheet exported",
+            f"Created calculation sheet at:\n{path}",
+            parent=self.master,
+        )
 
     def current_design(self) -> SavedDesign:
         span = float(self.span_entry.get())

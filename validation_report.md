@@ -194,3 +194,26 @@ rerun and passed.
 | Canceled Save dialog | Passed: no CSV is written and no success dialog is shown |
 | Microsoft Excel open | Passed: Excel reported `beam_designer_csv_validation.csv` as the active workbook |
 | Full Python test suite | 21 tests passed |
+
+## PDF calculation sheet implementation verification
+
+| Check | Result |
+|---|---|
+| Baseline report generated | Passed: `beam_designer_baseline_calculation_sheet.pdf` |
+| Page count and paper size | Passed: 3 pages, each with a 612 × 792 point US Letter page box |
+| Required report content | Passed: title/date, inputs and loads, reactions, maxima and locations, bending/deflection demands and allowables, PASS results, overall status, and assumptions/limitations |
+| Baseline values | Passed: reactions 10.000 kip each; maximum shear 10.000 kip at 0 ft; maximum moment 50.000 kip-ft at 10 ft; maximum deflection 0.6085 in at 10 ft; bending and deflection checks PASS |
+| Diagrams and page bounds | Passed: all three rendered pages visually inspected; beam, shear, moment, and deflection diagrams have labels/units; no extracted text falls outside page bounds or overlaps/clips in visual review |
+| Current/missing or mismatched results | Passed: PDF generation rejects missing or mismatched analysis results before writing a file |
+| Invalid inputs and canceled Save dialog | Passed: current invalid inputs disable PDF export and show a helpful message; cancel creates no file and shows no error |
+| Full Python test suite | 27 tests passed, including all beam calculation, Save/Open, CSV, and PDF tests |
+
+One initial run of the added lumber/cantilever report test failed because the
+test expected title-case orientation text; the report correctly preserves the
+saved design's lowercase value. The assertion was corrected, not the report or
+calculation, and the complete suite then passed.
+
+The sample PDF's Letter page dimensions and rendered page bounds were verified;
+a physical printer test was not performed. The PDF reports the app's validated
+preliminary calculations and approximate section-property data, and is not a
+substitute for code-compliant professional design review.

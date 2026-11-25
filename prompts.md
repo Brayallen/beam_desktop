@@ -47,3 +47,8 @@
 - Asked: Add the PDF Calculation Sheet requirements to spec.md, including report content, US Letter printing, and invalid-input/canceled-dialog behavior, without implementing it or changing calculations, Save/Open, or CSV Export.
 - Changed: Specified a PDF export button and Save dialog, required design inputs, diagrams, values, checks, status, assumptions, and readable multi-page US Letter layout.
 - Worked: Yes.
+
+## Request 11
+- Asked: Implement the PDF Calculation Sheet, verify the baseline PDF page-by-page and US Letter layout, test invalid/canceled exports, rerun validations, and commit implementation and test results.
+- Changed: Added a PDF export button and ReportLab report generator with input/load tables, beam and result diagrams, checks, assumptions, and page headers/footers; generated a baseline PDF and documented verification.
+- Worked: Yes. All 27 tests passed; the 3-page Letter PDF was visually inspected, Excel/CSV and Save/Open tests remain passing, and invalid/canceled PDF exports were handled safely. One initial new test had a capitalization-only expectation mismatch that was corrected and rerun. A physical printer test was not performed.
